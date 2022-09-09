@@ -41,10 +41,15 @@ export function SubscribeForm() {
       ).then((res) => {
         if(res.ok) {
           return res.json()
+        } else {
+          localStorage.removeItem('loginToken')
         }
       }).then((body) => {
         config.bearerToken = body.token
-        console.log(config.bearerToken)
+        localStorage.setItem('loginToken', body.token)
+        console.log(localStorage.getItem('loginToken'))
+        window.alert("Success to Sign in!")
+        window.location.href = "/"
       }).catch(console.error)
     }
   }

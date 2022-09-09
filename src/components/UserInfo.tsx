@@ -1,40 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import config from '../website-config'
 
 export function UserInfo() {
-  let userInfo: {
-    username: string,
-    email: string
-  } = {
+
+  const [userInfo, setUserInfo] = useState({
     username: "",
     email: ""
-  }
+  })
 
-  if(config.bearerToken != '') {
+  const loginToken = localStorage.getItem('loginToken')
+  console.log("token:" + loginToken)
+
+  if(loginToken != null && userInfo.email == "") {
     fetch(
         config.backendUrl + "/auth/get", 
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${config.bearerToken}`
+            Authorization: `Bearer ${loginToken}`
           }
         }
       ).then((res) => {
         if(res.status == 200) {
-            return res.json()
+          res.json().then((body) => {
+            console.log(body);
+            if(userInfo.email != body.email) {
+              userInfo.username = body.username;
+              userInfo.email = body.email;
+              setUserInfo({...userInfo})
+            }
+          })
         }
-
-        config.bearerToken = ''
-      }).then((body) => {
-        console.log(body);
-        userInfo.username = body.username;
-        userInfo.email = body.email;
       }).catch(console.error)
   }
 
   return(
-    <h5>{userInfo.username}</h5>
+    <>{userInfo.username}</>
   );
 }
+
 

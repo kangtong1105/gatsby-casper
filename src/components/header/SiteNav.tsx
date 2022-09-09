@@ -136,8 +136,12 @@ class SiteNav extends React.Component<SiteNavProps, SiteNavState> {
               )}
               
             </SocialLinks>
-            <UserInfo/>
-            {config.showSubscribe && (
+            {localStorage.getItem('loginToken') != undefined && (
+              <SubscribeButton>
+                <UserInfo/>
+              </SubscribeButton>
+            )}
+            {localStorage.getItem('loginToken') == undefined && (
               <SubscribeButton onClick={this.openModal}>Sign in</SubscribeButton>
             )}
           </SiteNavRight>

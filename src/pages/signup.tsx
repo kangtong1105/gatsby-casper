@@ -74,7 +74,8 @@ function Register() {
         }
       ).then((res) => {
         if(res.ok) {
-          window.alert("Success to Sign up!");
+          window.alert("Success to Sign up!")
+          window.location.href = "/"
         }
       })
     }
