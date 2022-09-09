@@ -64,9 +64,7 @@ function quickstart() {
       listId.title = 0;
     }
 
-    setListId({
-      ...listId
-    })
+    setListId({...listId})
   }
 
   return (
