@@ -11,7 +11,6 @@ module.exports = {
     'MarkdownRemark.frontmatter.author': 'AuthorYaml.name',
   },
   plugins: [
-    `gatsby-plugin-material-ui`,
     'gatsby-plugin-sitemap',
     'gatsby-plugin-image',
     'gatsby-plugin-sharp',

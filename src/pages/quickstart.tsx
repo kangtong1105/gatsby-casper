@@ -19,6 +19,7 @@ import {
 import { NoImage, PostFull, PostFullHeader, PostFullTitle } from '../templates/post';
 import { colors } from '../styles/colors';
 import items from '../content/isms-checklist.json';
+import config from '../website-config';
 
 const PageTemplate = css`
   .site-main {
@@ -35,6 +36,20 @@ const PageTemplate = css`
   }
 `;
 
+let checklist = {}
+items.title.map((titledata) => {
+  titledata.field.map((fielddata) => {
+    fielddata.category.map((categorydata) => {
+      categorydata.item.map((item) => {
+        checklist = {
+          ...checklist,
+          [item.id]: false
+        }
+      })
+    })
+  })
+})
+
 function quickstart() {
 
   const [listId, setListId] = useState({
@@ -43,28 +58,70 @@ function quickstart() {
     category: 0
   })
 
-  const handleClick = (e: React.SyntheticEvent) => {
+  const checkboxes = document.getElementsByName("checkbox");
+
+  const nextClick = (e: React.SyntheticEvent) => {
 
     console.log("click handler called")
 
     listId.category = listId.category + 1;
 
     if(listId.category >= items.title[listId.title].field[listId.field].category.length) {
-      listId.category = 0;
-      listId.field++;
-      
+      listId.category = 0
+      listId.field++
     }
 
     if(listId.field >= items.title[listId.title].field.length) {
-      listId.field = 0;
-      listId.title = listId.title + 1;
+      listId.field = 0
+      listId.title = listId.title + 1
     }
 
     if(listId.title >= 3) {
-      listId.title = 0;
+      listId.title = 0
     }
 
     setListId({...listId})
+
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = false;
+    })
+  }
+
+  const submitClick = (e: React.SyntheticEvent) => {
+
+    const jsonbody = {
+      items: {
+        ...checklist
+      }
+    }
+
+    console.log(JSON.stringify(jsonbody))
+
+    fetch(
+      config.backendUrl + "/ismslist/post", 
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem('loginToken')}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(jsonbody)
+      }
+    ).then((res) => {
+      if(res.ok) {
+        window.alert("Success to post checklist!")
+        window.location.href = "/"
+      } else {
+        window.alert("failed")
+      }
+    })
+  }
+
+  const onCheck = (e: React.FormEvent<HTMLInputElement>) => {
+    checklist = {
+      ...checklist,
+      [e.currentTarget.id]: e.currentTarget.checked
+    }
   }
 
   return (
@@ -104,13 +161,19 @@ function quickstart() {
                           <tr>
                             <td>{item.id}</td>
                             <td>{item.detail}</td>
-                            <td><input type="checkbox"></input></td>
+                            <td><input type="checkbox" name="checkbox" id={item.id} onChange={onCheck}></input></td>
                           </tr>
                         )
                       })}
                     </tbody>
                   </table>
-                  <FormButton onClick={handleClick}>Next</FormButton>
+                  {listId.title == items.title.length - 1 && listId.field == items.title[items.title.length - 1].field.length - 1 && (
+                    <FormButton onClick={submitClick}>Submit</FormButton>
+                  )}
+                  {(listId.title != items.title.length - 1 || listId.field != items.title[items.title.length - 1].field.length - 1) && (
+                    <FormButton onClick={nextClick}>Next</FormButton>
+                  )}
+                  <FormButton onClick={submitClick}>Submit</FormButton>
                 </div>
               </PostFullContent>
             </article>

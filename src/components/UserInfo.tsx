@@ -31,6 +31,8 @@ export function UserInfo() {
               setUserInfo({...userInfo})
             }
           })
+        } else {
+          localStorage.removeItem('loginToken')
         }
       }).catch(console.error)
   }
