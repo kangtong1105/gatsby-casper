@@ -25,7 +25,6 @@ interface NotFoundTemplateProps {
 
 function NotFoundPage(props: NotFoundTemplateProps) {
   const { edges } = props.data.allMarkdownRemark;
-
   return (
     <IndexLayout>
       <Wrapper>
